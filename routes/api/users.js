@@ -10,9 +10,9 @@ const passport = require('passport');
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
 
-// Load User module
+// Load User model
 
-const User = require('../../modules/User');
+const User = require('../../models/User');
 
 //Only Autentification!!!
 // @route   GET api/users/test
@@ -25,6 +25,13 @@ router.get('/test', (req, res) => res.json({ msg: 'Users Works' }));
 // @desc    Register User
 // @access  Public
 router.post('/register', (req, res) => {
+	const { errors, isValid } = validateRegisterInput(req.body);
+
+	// Check Validation
+	if (!isValid) {
+		return res.status(400).json(errors);
+	}
+
 	User.findOne({ email: req.body.email }) // find email of User that try to register
 		.then(user => {
 			if (user) {
